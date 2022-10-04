@@ -1,4 +1,4 @@
-# Extendable Car Spoiler
+# Retractable Car Spoiler
 
 ![image](https://user-images.githubusercontent.com/74902057/193839434-5a57f111-8e42-49e6-a089-d34d4ca45094.png)
 
