@@ -1,0 +1,84 @@
+/*
+  This program blinks pin 13 of the Arduino (the
+ built-in LED)
+*/
+
+int brightness = 0;
+int rainSensor;
+int speedSensor;
+int currentState;
+
+#define NO  0
+#define YES    1
+#define INITIAL_STATE  0
+#define ST_SPOILER_DOWN   1
+#define ST_SPOILER_UP     2
+
+#define IO_I_RAINSENSOR     2
+#define IO_PWM_SPEEDSENSOR  A0
+#define IO_PWM_LIGHT 6
+
+
+void setup(){
+  currentState = INITIAL_STATE;
+  pinMode(IO_I_RAINSENSOR, INPUT);
+  pinMode(IO_PWM_SPEEDSENSOR, INPUT);
+  pinMode(IO_PWM_LIGHT, OUTPUT);
+  Serial.begin(9600);
+  currentState = ST_SPOILER_DOWN;
+  brightness = 0;
+}
+
+void loop()
+{
+
+
+/*
+In this state, the spoiler is retracted 
+hence the circuit light is off. The code under
+dictates that if either the speed sensor or rain
+sensor detect their event, the circuit switches
+to the next state.
+*/
+rainSensor = digitalRead(IO_I_RAINSENSOR);
+  if ((rainSensor == 1) || (speedSensor > 100))
+    Serial.println("switch is on");
+  else 
+    Serial.println("swtich is off");
+
+
+if(currentState == ST_SPOILER_DOWN){
+  rainSensor = digitalRead(IO_I_RAINSENSOR);
+  Serial.println(rainSensor);
+  speedSensor = analogRead(IO_PWM_SPEEDSENSOR);
+  if (speedSensor >100){
+    if (rainSensor == HIGH){
+   brightness = 255;
+   analogWrite(IO_PWM_LIGHT, brightness);
+   currentState = ST_SPOILER_UP;
+    Serial.println("- Spoiler Down event detected. \n" );
+    }
+}
+}
+
+
+  /*
+  In this state the spoiler is extended. 
+  The circuit light is on on to represent this.
+  The code under dictates that if either the 
+  speed sensor or rain sensor detect their event, 
+  the circuit switches to the next state.
+  */
+
+if(currentState == ST_SPOILER_UP) {
+   rainSensor = digitalRead(IO_I_RAINSENSOR);
+  Serial.println(rainSensor);
+   speedSensor = analogRead(IO_PWM_SPEEDSENSOR);
+  if (speedSensor <95 && rainSensor == LOW){
+   brightness = 0;
+   analogWrite(IO_PWM_LIGHT, brightness);
+   currentState = ST_SPOILER_DOWN;
+  Serial.println("- Spoiler Up event detected. \n" );
+        }
+}
+    }
